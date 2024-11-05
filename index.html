@@ -494,91 +494,207 @@
     </div>
 
     <script>
-        // Initialize all star ratings
-        document.querySelectorAll('.stars').forEach(starsContainer => {
-            for (let i = 1; i <= 5; i++) {
-                const star = document.createElement('span');
-                star.className = 'star';
-                star.innerHTML = '★';
-                star.dataset.value = i;
-                starsContainer.appendChild(star);
-            }
+// Initialize all star ratings
+document.querySelectorAll('.stars').forEach(starsContainer => {
+    for (let i = 1; i <= 5; i++) {
+        const star = document.createElement('span');
+        star.className = 'star';
+        star.innerHTML = '★';
+        star.dataset.value = i;
+        starsContainer.appendChild(star);
+    }
+});
+
+// Star rating functionality
+document.querySelectorAll('.stars').forEach(starsContainer => {
+    const stars = starsContainer.querySelectorAll('.star');
+    
+    stars.forEach(star => {
+        star.addEventListener('mouseover', function() {
+            const rating = this.dataset.value;
+            highlightStars(starsContainer, rating);
         });
 
-        // Star rating functionality
-        document.querySelectorAll('.stars').forEach(starsContainer => {
-            const stars = starsContainer.querySelectorAll('.star');
-            
-            stars.forEach(star => {
-                star.addEventListener('mouseover', function() {
-                    const rating = this.dataset.value;
-                    highlightStars(starsContainer, rating);
-                });
-
-                star.addEventListener('click', function() {
-                    const rating = this.dataset.value;
-                    starsContainer.dataset.selected = rating;
-                    highlightStars(starsContainer, rating);
-                    updateProgress();
-                });
-
-                star.addEventListener('mouseout', function() {
-                    const rating = starsContainer.dataset.selected || 0;
-                    highlightStars(starsContainer, rating);
-                });
-            });
+        star.addEventListener('click', function() {
+            const rating = this.dataset.value;
+            starsContainer.dataset.selected = rating;
+            highlightStars(starsContainer, rating);
+            updateProgress();
         });
 
-        function highlightStars(container, rating) {
-            container.querySelectorAll('.star').forEach(star => {
-                star.classList.toggle('active', star.dataset.value <= rating);
-            });
+        star.addEventListener('mouseout', function() {
+            const rating = starsContainer.dataset.selected || 0;
+            highlightStars(starsContainer, rating);
+        });
+    });
+});
+
+function highlightStars(container, rating) {
+    container.querySelectorAll('.star').forEach(star => {
+        star.classList.toggle('active', star.dataset.value <= rating);
+    });
+}
+
+// Emoji rating functionality
+document.querySelectorAll('.emoji').forEach(emoji => {
+    emoji.addEventListener('click', function() {
+        document.querySelectorAll('.emoji').forEach(e => e.classList.remove('selected'));
+        this.classList.add('selected');
+        updateProgress();
+    });
+});
+
+// Progress bar
+function updateProgress() {
+    const totalRatings = document.querySelectorAll('.stars').length + 1; // +1 for emoji rating
+    const completedRatings = document.querySelectorAll('.stars[data-selected]').length + 
+                           (document.querySelector('.emoji.selected') ? 1 : 0);
+    const progress = (completedRatings / totalRatings) * 100;
+    document.querySelector('.progress-bar').style.width = `${progress}%`;
+}
+
+// Validation functions
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+function validatePhone(phone) {
+    // Allow international formats and remove spaces/special chars for validation
+    const cleanPhone = phone.replace(/[\s\-\(\)\+]/g, '');
+    return cleanPhone.length >= 10 && cleanPhone.length <= 15 && /^\d+$/.test(cleanPhone);
+}
+
+function validateRoomNumber(room) {
+    // Assuming room numbers are 3-4 digits
+    return /^\d{3,4}$/.test(room);
+}
+
+function validateRequired(value) {
+    return value.trim().length > 0;
+}
+
+function showError(elementId, show, message = null) {
+    const errorElement = document.getElementById(elementId);
+    const inputElement = document.getElementById(elementId.replace('Error', ''));
+    
+    if (message && errorElement) {
+        errorElement.textContent = message;
+    }
+    
+    errorElement.classList.toggle('visible', show);
+    inputElement.classList.toggle('validation-error', show);
+}
+
+// Form validation and submission
+const reviewForm = document.getElementById('reviewForm');
+reviewForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    let isValid = true;
+    const requiredFields = {
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        roomNumber: document.getElementById('roomNumber').value
+    };
+
+    // Validate all required fields
+    Object.entries(requiredFields).forEach(([field, value]) => {
+        if (!validateRequired(value)) {
+            showError(`${field}Error`, true, 'This field is required');
+            isValid = false;
         }
+    });
 
-        // Emoji rating functionality
-        document.querySelectorAll('.emoji').forEach(emoji => {
-            emoji.addEventListener('click', function() {
-                document.querySelectorAll('.emoji').forEach(e => e.classList.remove('selected'));
-                this.classList.add('selected');
-                updateProgress();
-            });
-        });
+    // Validate email format
+    if (requiredFields.email && !validateEmail(requiredFields.email)) {
+        showError('emailError', true, 'Please enter a valid email address');
+        isValid = false;
+    }
 
-        // Progress bar
-        function updateProgress() {
-            const totalRatings = document.querySelectorAll('.stars').length + 1; // +1 for emoji rating
-            const completedRatings = document.querySelectorAll('.stars[data-selected]').length + 
-                                   (document.querySelector('.emoji.selected') ? 1 : 0);
-            const progress = (completedRatings / totalRatings) * 100;
-            document.querySelector('.progress-bar').style.width = `${progress}%`;
+    // Validate phone format
+    if (requiredFields.phone && !validatePhone(requiredFields.phone)) {
+        showError('phoneError', true, 'Please enter a valid phone number');
+        isValid = false;
+    }
+
+    // Validate room number
+    if (requiredFields.roomNumber && !validateRoomNumber(requiredFields.roomNumber)) {
+        showError('roomError', true, 'Please enter a valid room number (3-4 digits)');
+        isValid = false;
+    }
+
+    // Validate that at least one rating is provided
+    const hasEmojiRating = document.querySelector('.emoji.selected');
+    const hasAnyStarRating = document.querySelector('.stars[data-selected]');
+    
+    if (!hasEmojiRating && !hasAnyStarRating) {
+        alert('Please provide at least one rating before submitting');
+        isValid = false;
+    }
+
+    if (!isValid) {
+        return;
+    }
+
+    // Collect feedback data
+    const feedback = {
+        contactInfo: {
+            roomNumber: requiredFields.roomNumber,
+            email: requiredFields.email,
+            phone: requiredFields.phone
+        },
+        overallMood: hasEmojiRating ? hasEmojiRating.dataset.value : null,
+        ratings: {},
+        comments: {}
+    };
+
+    // Collect all ratings
+    document.querySelectorAll('.stars').forEach(stars => {
+        if (stars.dataset.selected) {
+            feedback.ratings[stars.dataset.rating] = stars.dataset.selected;
         }
+    });
 
-        // Form submission
-        document.getElementById('reviewForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Collect all ratings and feedback
-            const feedback = {
-                overallMood: document.querySelector('.emoji.selected')?.dataset.value,
-                ratings: {},
-                comments: {}
-            };
+    // Collect all comments
+    document.querySelectorAll('.feedback-input').forEach((input, index) => {
+        if (input.value.trim()) {
+            feedback.comments[`feedback_${index}`] = input.value.trim();
+        }
+    });
 
-            document.querySelectorAll('.stars').forEach(stars => {
-                feedback.ratings[stars.dataset.rating] = stars.dataset.selected;
-            });
+    // Here you would typically send the data to your server
+    console.log('Feedback collected:', feedback);
 
-            document.querySelectorAll('.feedback-input').forEach((input, index) => {
-                feedback.comments[`feedback_${index}`] = input.value;
-            });
+    // Show thank you message
+    reviewForm.style.display = 'none';
+    document.getElementById('thankYou').classList.add('active');
+});
 
-            // You would typically send this data to your server here
-            console.log('Feedback collected:', feedback);
+// Real-time validation
+const inputs = {
+    email: { validate: validateEmail, message: 'Please enter a valid email address' },
+    phone: { validate: validatePhone, message: 'Please enter a valid phone number' },
+    roomNumber: { validate: validateRoomNumber, message: 'Please enter a valid room number (3-4 digits)' }
+};
 
-            // Show thank you message
-            document.getElementById('reviewForm').style.display = 'none';
-            document.getElementById('thankYou').classList.add('active');
-        });
+Object.entries(inputs).forEach(([field, { validate, message }]) => {
+    const input = document.getElementById(field);
+    input.addEventListener('input', function() {
+        if (this.value.trim()) {
+            showError(`${field}Error`, !validate(this.value), message);
+        } else {
+            showError(`${field}Error`, false);
+        }
+    });
+
+    // Add blur event to show required field error
+    input.addEventListener('blur', function() {
+        if (!this.value.trim()) {
+            showError(`${field}Error`, true, 'This field is required');
+        }
+    });
+});
     </script>
 </body>
 </html>
