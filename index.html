@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T-City Presidential Hotel - Guest Feedback</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header img {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #1a237e;
+        }
+
+        .header p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .review-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #1a237e;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rating-group {
+            margin-bottom: 25px;
+        }
+
+        .rating-item {
+            margin-bottom: 15px;
+        }
+
+        .rating-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #444;
+            font-weight: 500;
+        }
+
+        .stars {
+            display: flex;
+            gap: 5px;
+        }
+
+        .star {
+            font-size: 24px;
+            cursor: pointer;
+            color: #ddd;
+            transition: color 0.2s;
+        }
+
+        .star.active {
+            color: #ffd700;
+        }
+
+        .star:hover {
+            color: #ffeb3b;
+        }
+
+        .feedback-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .rating-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .rating-row label {
+            flex: 1;
+        }
+
+        .rating-row .stars {
+            flex: 1;
+            justify-content: flex-end;
+        }
+
+        .submit-section {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .submit-btn {
+            background: #1a237e;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #283593;
+            transform: translateY(-2px);
+        }
+
+        .progress {
+            height: 4px;
+            background: #eee;
+            margin: 20px 0;
+            border-radius: 2px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #1a237e;
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        .thank-you {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .thank-you.active {
+            display: block;
+        }
+
+        .emoji-rating {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .emoji {
+            font-size: 30px;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: all 0.2s;
+        }
+
+        .emoji:hover, .emoji.selected {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+        .contact-section {
+            background: #e3f2fd;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 2px solid #1a237e;
+        }
+
+        .contact-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .contact-header i {
+            font-size: 24px;
+            color: #1a237e;
+        }
+
+        .contact-form {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #1a237e;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #1a237e;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #3949ab;
+            box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.2);
+        }
+
+        .error-message {
+            color: #d32f2f;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.visible {
+            display: block;
+        }
+
+        .required-field {
+            color: #d32f2f;
+            margin-left: 4px;
+        }
+
+        .room-number-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #1a237e;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-top: 8px;
+        }
+
+        .validation-error {
+            border-color: #d32f2f !important;
+        }
+
+        .contact-notice {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Additional responsive styles */
+        @media (max-width: 600px) {
+            .input-group {
+                flex: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 20px 15px;
+            }
+
+            .review-section {
+                padding: 20px;
+            }
+
+            .rating-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .rating-row .stars {
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="/assets/images/logo.jpg" alt="Hotel Logo">
+            <h1>Thank you for staying at T-City Hotel!</h1>
+            <p>Your feedback helps us improve our services and provide better experiences for future guests.</p>
+        </div>
+
+        <div class="contact-section">
+            <div class="contact-header">
+                <h2 class="section-title">📋 Contact Information</h2>
+            </div>
+            <div class="contact-form">
+                <div class="input-group">
+                    <label>Room Number<span class="required-field">*</span></label>
+                    <input 
+                        type="text" 
+                        id="roomNumber" 
+                        class="room-number-input"
+                        placeholder="Enter your room number"
+                        required
+                    >
+                    <div class="error-message" id="roomError">Please enter a valid room number</div>
+                </div>
+                <div class="input-group">
+                    <label>Email Address<span class="required-field">*</span></label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        placeholder="your.email@example.com"
+                        required
+                    >
+                    <div class="error-message" id="emailError">Please enter a valid email address</div>
+                </div>
+                <div class="input-group">
+                    <label>Phone Number<span class="required-field">*</span></label>
+                    <input 
+                        type="tel" 
+                        id="phone" 
+                        placeholder="+1 (234) 567-8900"
+                        required
+                    >
+                    <div class="error-message" id="phoneError">Please enter a valid phone number</div>
+                </div>
+            </div>
+            <p class="contact-notice">
+                Your contact information will only be used if we need to follow up on your feedback. 
+                We respect your privacy and will not use this information for marketing purposes.
+            </p>
+        </div>
+
+        <div class="progress">
+            <div class="progress-bar" style="width: 0%"></div>
+        </div>
+
+        <form id="reviewForm">
+            <div class="review-section">
+                <h2 class="section-title">🌟 Overall Experience</h2>
+                <div class="emoji-rating" id="overallMood">
+                    <span class="emoji" data-value="1">😞</span>
+                    <span class="emoji" data-value="2">😕</span>
+                    <span class="emoji" data-value="3">😊</span>
+                    <span class="emoji" data-value="4">😃</span>
+                    <span class="emoji" data-value="5">🤩</span>
+                </div>
+                <textarea 
+                    class="feedback-input" 
+                    placeholder="Please share your overall experience with us..."
+                ></textarea>
+            </div>
+
+            <div class="review-section">
+                <h2 class="section-title">🛏️ Room Comfort</h2>
+                <div class="rating-group">
+                    <div class="rating-row">
+                        <label>Bed Comfort</label>
+                        <div class="stars" data-rating="room-bed"></div>
+                    </div>
+                    <div class="rating-row">
+                        <label>Cleanliness</label>
+                        <div class="stars" data-rating="room-clean"></div>
+                    </div>
+                    <div class="rating-row">
+                        <label>Room Amenities</label>
+                        <div class="stars" data-rating="room-amenities"></div>
+                    </div>
+                    <div class="rating-row">
+                        <label>Bathroom Quality</label>
+                        <div class="stars" data-rating="room-bathroom"></div>
+                    </div>
+                </div>
+                <textarea 
+                    class="feedback-input" 
+                    placeholder="Any specific comments about your room?"
+                ></textarea>
+            </div>
+
+            <div class="review-section">
+                <h2 class="section-title">🍽️ Dining Experience</h2>
+                <div class="rating-group">
+                    <div class="rating-row">
+                        <label>Food Quality</label>
+                        <div class="stars" data-rating="dining-food"></div>
+                    </div>
+                    <div class="rating-row">
+                        <label>Service</label>
+                        <div class="stars" data-rating="dining-service"></div>
+                    </div>
+                    <div class="rating-row">
+                        <label>Menu Variety</label>
+                        <div class="stars" data-rating="dining-variety"></div>
+                    </div>
+                    <div class="rating-row">
+                        <label>Value for Money</label>
+                        <div class="stars" data-rating="dining-value"></div>
+                    </div>
+                </div>
+                <textarea 
+                    class="feedback-input" 
+                    placeholder="How was your dining experience?"
+                ></textarea>
+            </div>
+
+            <div class="review-section">
+                <h2 class="section-title">👥 Staff & Service</h2>
+                <div class="rating-group">
+                    <div class="rating-row">
+                        <label>Front Desk</label>
+                        <div class="stars" data-rating="staff-frontdesk"></div>
+                    </div>
+                    <div class="rating-row">
+                        <label>Housekeeping</label>
+                        <div class="stars" data-rating="staff-housekeeping"></div>
+                    </div>
+                    <div class="rating-row">
+                        <label>Concierge</label>
+                        <div class="stars" data-rating="staff-concierge"></div>
+                    </div>
+                </div>
+                <textarea 
+                    class="feedback-input" 
+                    placeholder="Any comments about our staff and service?"
+                ></textarea>
+            </div>
+
+            <div class="review-section">
+                <h2 class="section-title">🏊‍♂️ Facilities</h2>
+                <div class="rating-group">
+                    <div class="rating-row">
+                        <label>Swimming Pool</label>
+                        <div class="stars" data-rating="facilities-pool"></div>
+                    </div>
+                    <div class="rating-row">
+                        <label>Spa</label>
+                        <div class="stars" data-rating="facilities-spa"></div>
+                    </div>
+                    <div class="rating-row">
+                        <label>Gym</label>
+                        <div class="stars" data-rating="facilities-gym"></div>
+                    </div>
+                </div>
+                <textarea 
+                    class="feedback-input" 
+                    placeholder="How were our facilities?"
+                ></textarea>
+            </div>
+
+            <div class="submit-section">
+                <button type="submit" class="submit-btn">Submit Feedback</button>
+            </div>
+        </form>
+
+        <div class="thank-you" id="thankYou">
+            <h2>Thank You for Your Feedback!</h2>
+            <p>Your insights help us create better experiences for all our guests.</p>
+        </div>
+    </div>
+
+    <script>
+// Initialize all star ratings
+document.querySelectorAll('.stars').forEach(starsContainer => {
+    for (let i = 1; i <= 5; i++) {
+        const star = document.createElement('span');
+        star.className = 'star';
+        star.innerHTML = '★';
+        star.dataset.value = i;
+        starsContainer.appendChild(star);
+    }
+});
+
+// Star rating functionality
+document.querySelectorAll('.stars').forEach(starsContainer => {
+    const stars = starsContainer.querySelectorAll('.star');
+    
+    stars.forEach(star => {
+        star.addEventListener('mouseover', function() {
+            const rating = this.dataset.value;
+            highlightStars(starsContainer, rating);
+        });
+
+        star.addEventListener('click', function() {
+            const rating = this.dataset.value;
+            starsContainer.dataset.selected = rating;
+            highlightStars(starsContainer, rating);
+            updateProgress();
+        });
+
+        star.addEventListener('mouseout', function() {
+            const rating = starsContainer.dataset.selected || 0;
+            highlightStars(starsContainer, rating);
+        });
+    });
+});
+
+function highlightStars(container, rating) {
+    container.querySelectorAll('.star').forEach(star => {
+        star.classList.toggle('active', star.dataset.value <= rating);
+    });
+}
+
+// Emoji rating functionality
+document.querySelectorAll('.emoji').forEach(emoji => {
+    emoji.addEventListener('click', function() {
+        document.querySelectorAll('.emoji').forEach(e => e.classList.remove('selected'));
+        this.classList.add('selected');
+        updateProgress();
+    });
+});
+
+// Progress bar
+function updateProgress() {
+    const totalRatings = document.querySelectorAll('.stars').length + 1; // +1 for emoji rating
+    const completedRatings = document.querySelectorAll('.stars[data-selected]').length + 
+                           (document.querySelector('.emoji.selected') ? 1 : 0);
+    const progress = (completedRatings / totalRatings) * 100;
+    document.querySelector('.progress-bar').style.width = `${progress}%`;
+}
+
+// Validation functions
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+function validatePhone(phone) {
+    // Allow international formats and remove spaces/special chars for validation
+    const cleanPhone = phone.replace(/[\s\-\(\)\+]/g, '');
+    return cleanPhone.length >= 10 && cleanPhone.length <= 15 && /^\d+$/.test(cleanPhone);
+}
+
+function validateRoomNumber(room) {
+    // Assuming room numbers are 3-4 digits
+    return /^\d{3,4}$/.test(room);
+}
+
+function validateRequired(value) {
+    return value.trim().length > 0;
+}
+
+function showError(elementId, show, message = null) {
+    const errorElement = document.getElementById(elementId);
+    const inputElement = document.getElementById(elementId.replace('Error', ''));
+    
+    if (message && errorElement) {
+        errorElement.textContent = message;
+    }
+    
+    errorElement.classList.toggle('visible', show);
+    inputElement.classList.toggle('validation-error', show);
+}
+
+// Form validation and submission
+const reviewForm = document.getElementById('reviewForm');
+reviewForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    let isValid = true;
+    const requiredFields = {
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        roomNumber: document.getElementById('roomNumber').value
+    };
+
+    // Validate all required fields
+    Object.entries(requiredFields).forEach(([field, value]) => {
+        if (!validateRequired(value)) {
+            showError(`${field}Error`, true, 'This field is required');
+            isValid = false;
+        }
+    });
+
+    // Validate email format
+    if (requiredFields.email && !validateEmail(requiredFields.email)) {
+        showError('emailError', true, 'Please enter a valid email address');
+        isValid = false;
+    }
+
+    // Validate phone format
+    if (requiredFields.phone && !validatePhone(requiredFields.phone)) {
+        showError('phoneError', true, 'Please enter a valid phone number');
+        isValid = false;
+    }
+
+    // Validate room number
+    if (requiredFields.roomNumber && !validateRoomNumber(requiredFields.roomNumber)) {
+        showError('roomError', true, 'Please enter a valid room number (3-4 digits)');
+        isValid = false;
+    }
+
+    // Validate that at least one rating is provided
+    const hasEmojiRating = document.querySelector('.emoji.selected');
+    const hasAnyStarRating = document.querySelector('.stars[data-selected]');
+    
+    if (!hasEmojiRating && !hasAnyStarRating) {
+        alert('Please provide at least one rating before submitting');
+        isValid = false;
+    }
+
+    if (!isValid) {
+        return;
+    }
+
+    // Collect feedback data
+    const feedback = {
+        contactInfo: {
+            roomNumber: requiredFields.roomNumber,
+            email: requiredFields.email,
+            phone: requiredFields.phone
+        },
+        overallMood: hasEmojiRating ? hasEmojiRating.dataset.value : null,
+        ratings: {},
+        comments: {}
+    };
+
+    // Collect all ratings
+    document.querySelectorAll('.stars').forEach(stars => {
+        if (stars.dataset.selected) {
+            feedback.ratings[stars.dataset.rating] = stars.dataset.selected;
+        }
+    });
+
+    // Collect all comments
+    document.querySelectorAll('.feedback-input').forEach((input, index) => {
+        if (input.value.trim()) {
+            feedback.comments[`feedback_${index}`] = input.value.trim();
+        }
+    });
+
+    // Here you would typically send the data to your server
+    console.log('Feedback collected:', feedback);
+
+    // Show thank you message
+    reviewForm.style.display = 'none';
+    document.getElementById('thankYou').classList.add('active');
+});
+
+// Real-time validation
+const inputs = {
+    email: { validate: validateEmail, message: 'Please enter a valid email address' },
+    phone: { validate: validatePhone, message: 'Please enter a valid phone number' },
+    roomNumber: { validate: validateRoomNumber, message: 'Please enter a valid room number (3-4 digits)' }
+};
+
+Object.entries(inputs).forEach(([field, { validate, message }]) => {
+    const input = document.getElementById(field);
+    input.addEventListener('input', function() {
+        if (this.value.trim()) {
+            showError(`${field}Error`, !validate(this.value), message);
+        } else {
+            showError(`${field}Error`, false);
+        }
+    });
+
+    // Add blur event to show required field error
+    input.addEventListener('blur', function() {
+        if (!this.value.trim()) {
+            showError(`${field}Error`, true, 'This field is required');
+        }
+    });
+});
+    </script>
+</body>
+</html>
